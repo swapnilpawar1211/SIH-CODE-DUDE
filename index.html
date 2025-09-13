@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>attenD - Login</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .login-container {
+            width: 300px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            text-align: center;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #00bcd4;
+        }
+        .tab-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            background: #e0f7fa;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .tab {
+            flex: 1;
+            padding: 10px;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font-weight: bold;
+            color: #007c91;
+        }
+        .tab.active {
+            background: #00bcd4;
+            color: white;
+        }
+        .input-box {
+            width: 90%;
+            padding: 8px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+        .btn {
+            background: #00bcd4;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 95%;
+            margin-top: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background: #0097a7;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">📸 attenD</div>
+
+        <!-- Tabs for Teacher / Student -->
+        <div class="tab-container">
+            <button class="tab active" onclick="showTeacher()">Teacher</button>
+            <button class="tab" onclick="showStudent()">Student</button>
+        </div>
+
+        <!-- Teacher Login Form -->
+        <div id="teacherForm">
+            <input type="text" class="input-box" id="teacherUser" placeholder="Username">
+            <input type="password" class="input-box" id="teacherPass" placeholder="Password">
+            <button class="btn" onclick="loginTeacher()">Login</button>
+        </div>
+
+        <!-- Student Login Form -->
+        <div id="studentForm" style="display:none;">
+            <input type="text" class="input-box" id="rollNo" placeholder="Enter Roll No">
+            <button class="btn" onclick="loginStudent()">View Analytics</button>
+        </div>
+    </div>
+
+    <script>
+        function showTeacher(){
+            document.getElementById("teacherForm").style.display="block";
+            document.getElementById("studentForm").style.display="none";
+            document.querySelectorAll(".tab")[0].classList.add("active");
+            document.querySelectorAll(".tab")[1].classList.remove("active");
+        }
+        function showStudent(){
+            document.getElementById("teacherForm").style.display="none";
+            document.getElementById("studentForm").style.display="block";
+            document.querySelectorAll(".tab")[1].classList.add("active");
+            document.querySelectorAll(".tab")[0].classList.remove("active");
+        }
+        function loginTeacher(){
+            let u = document.getElementById("teacherUser").value;
+            let p = document.getElementById("teacherPass").value;
+            if(u.startsWith("teacher_") && p==="123"){
+                alert("Login Successful for "+u);
+                window.location.href="dashboard.html";
+            }else{
+                alert("Invalid teacher login!");
+            }
+        }
+        function loginStudent(){
+            let roll = document.getElementById("rollNo").value;
+            if(roll.trim()!==""){
+                alert("Showing analytics for "+roll);
+                window.location.href="student-dashboard.html";
+            }else{
+                alert("Please enter roll number!");
+            }
+        }
+    </script>
+</body>
+</html>
