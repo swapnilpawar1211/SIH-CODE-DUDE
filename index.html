@@ -1,395 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>attenD — Face Recognition Attendance (Frontend)</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>attenD — Face Recognition Attendance (Frontend)</title>
 
-  <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- face-api.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 
-  <!-- face-api.js -->
-  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="script.js"></script>
 
-  <!-- jsPDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-  <style>
-    :root{
-      --bg: #f5f7fa; --card: #ffffff; --muted: #6b7280;
-      --primary: #2b6ef6; --success: #16a34a; --danger: #dc2626;
-      --surface-shadow: rgba(16,24,40,0.04);
-    }
-    html,body{height:100%;margin:0;font-family:Inter,Segoe UI,system-ui,Arial;color:#0f172a;background:var(--bg)}
-    header{background:var(--card);border-bottom:1px solid rgba(15,23,42,0.04);
-      padding:14px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;
-      box-shadow:0 1px 0 var(--surface-shadow);}
-    .container-main{max-width:1000px;margin:28px auto;padding:0 16px}
-    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 8px 20px var(--surface-shadow);border:none}
-    .muted{color:var(--muted)}
-    .btn-primary{background:var(--primary);border:none}
-    .btn-success{background:var(--success);border:none}
-    .btn-danger{background:var(--danger);border:none}
-    .hidden{display:none}
-    .fade-in{animation:fadeIn .36s ease both}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-    .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-    .stat{padding:12px;border-radius:8px;background:#f8fafc;text-align:center;font-weight:600}
-    .small-thumb{width:46px;height:46px;object-fit:cover;border-radius:6px;border:1px solid rgba(15,23,42,0.06)}
-    #splash{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:100}
-    #splash .box{display:flex;flex-direction:column;align-items:center;gap:12px}
-    @media (max-width:800px){ .stat-grid{grid-template-columns:repeat(1,1fr)} }
-    .face-tag{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:#f1f5f9;margin:6px 6px 6px 0}
-    footer{margin-top:40px;text-align:center;font-size:13px;color:var(--muted);padding:10px}
-    footer a{color:var(--primary);text-decoration:none;transition:color 0.3s}
-    footer a:hover{color:#1e40af}
-    #helpModal,#forgotModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center}
-    #helpModal{z-index:200} #forgotModal{z-index:210}
-    #helpBox,#forgotBox{background:white;padding:20px;border-radius:10px;max-width:480px;width:94%}
-  </style>
 </head>
+
 <body>
 
-  <!-- Splash -->
-  <div id="splash"><div class="box text-center">
-    <div style="font-size:28px;font-weight:800">attenD</div>
-    <div class="muted">Loading models & UI — please wait</div>
-  </div></div>
-
-  <!-- Header -->
-  <header><div style="font-weight:700; font-size:20px;">attenD</div></header>
-
-  <div class="container-main">
-    <!-- LOGIN -->
-    <div id="loginCard" class="card fade-in">
-      <h3>Login</h3>
-      <div class="row g-2 mt-2">
-        <div class="col"><button class="btn btn-primary w-100" onclick="showTeacherLogin()">Teacher Login</button></div>
-        <div class="col"><button class="btn btn-outline-secondary w-100" onclick="showStudentLogin()">Student Login</button></div>
-      </div>
-      <div id="teacherBox" class="hidden mt-3">
-        <input id="tuser" class="form-control mb-2" placeholder="username (teacher1)"/>
-        <div class="input-group mb-2">
-          <input id="tpass" type="password" class="form-control" placeholder="password (pass123)"/>
-          <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">👁</button>
+    <!-- Splash -->
+    <div id="splash">
+        <div class="box text-center">
+            <div style="font-size:28px;font-weight:800">attenD</div>
+            <div class="muted">Loading models & UI — please wait</div>
         </div>
-        <div class="d-flex gap-2 mb-2">
-          <button class="btn btn-primary flex-grow-1" onclick="doTeacherLogin()">Login as Teacher</button>
-          <button class="btn btn-link text-decoration-none" onclick="openForgot()">Forgot?</button>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div style="font-weight:700; font-size:20px;">attenD</div>
+    </header>
+
+    <div class="container-main">
+        <!-- LOGIN -->
+        <div id="loginCard" class="card fade-in">
+            <h3>Login</h3>
+            <div class="row g-2 mt-2">
+                <div class="col"><button class="btn btn-primary w-100" onclick="showTeacherLogin()">Teacher
+                        Login</button></div>
+                <div class="col"><button class="btn btn-outline-secondary w-100" onclick="showStudentLogin()">Student
+                        Login</button></div>
+            </div>
+            <div id="teacherBox" class="hidden mt-3">
+                <input id="tuser" class="form-control mb-2" placeholder="username (teacher1)" />
+                <div class="input-group mb-2">
+                    <input id="tpass" type="password" class="form-control" placeholder="password (pass123)" />
+                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">👁</button>
+                </div>
+                <div class="d-flex gap-2 mb-2">
+                    <button class="btn btn-primary flex-grow-1" onclick="doTeacherLogin()">Login as Teacher</button>
+                    <button class="btn btn-link text-decoration-none" onclick="openForgot()">Forgot?</button>
+                </div>
+            </div>
+            <div id="studentBox" class="hidden mt-3">
+                <input id="sroll" class="form-control mb-2" placeholder="Enter roll number (e.g. 1A-01)" />
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-secondary" onclick="doStudentLogin()">View My Report</button>
+                </div>
+            </div>
         </div>
-      </div>
-      <div id="studentBox" class="hidden mt-3">
-        <input id="sroll" class="form-control mb-2" placeholder="Enter roll number (e.g. 1A-01)"/>
-        <div class="d-grid gap-2">
-          <button class="btn btn-outline-secondary" onclick="doStudentLogin()">View My Report</button>
+
+        <!-- DASHBOARD -->
+        <div id="dashCard" class="card mt-4 hidden fade-in">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+                <h4>Teacher Dashboard</h4>
+                <div>
+                    <button class="btn btn-info me-2" onclick="openHelp()">Help</button>
+                    <button class="btn btn-danger" onclick="logout()">Logout</button>
+                </div>
+            </div>
+            <div class="stat-grid mt-3">
+                <div class="stat">Total Students<br>
+                    <div id="totStud">0</div>
+                </div>
+                <div class="stat">Present Today<br>
+                    <div id="presStud">0</div>
+                </div>
+                <div class="stat">Absent Today<br>
+                    <div id="absStud">0</div>
+                </div>
+            </div>
+            <div class="mt-3 d-grid gap-2">
+                <button class="btn btn-primary" onclick="openEnroll()">Enroll Students</button>
+                <button class="btn btn-success" onclick="openAttend()">Start Attendance</button>
+                <button class="btn btn-outline-secondary" onclick="openReport()">Reports</button>
+                <button class="btn btn-outline-primary" onclick="exportClassReport()">Export Report (PDF)</button>
+                <button class="btn btn-danger" onclick="clearAllStudents()">Clear All Students</button>
+            </div>
         </div>
-      </div>
-    </div>
 
-    <!-- DASHBOARD -->
-    <div id="dashCard" class="card mt-4 hidden fade-in">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h4>Teacher Dashboard</h4>
-        <div>
-          <button class="btn btn-info me-2" onclick="openHelp()">Help</button>
-          <button class="btn btn-danger" onclick="logout()">Logout</button>
+        <!-- ENROLL -->
+        <div id="enrollCard" class="card mt-4 hidden fade-in">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+                <h4>Enroll Student</h4>
+                <div><button class="btn btn-outline-secondary" onclick="backToDash()">Back</button></div>
+            </div>
+            <div class="mt-2">
+                <input id="enrollRoll" class="form-control mb-2" placeholder="Roll number e.g. 1A-01">
+                <div class="muted mb-2">Position face and press Capture (3 samples).</div>
+                <video id="enrollVideo" autoplay muted playsinline
+                    style="width:100%;height:320px;object-fit:cover;border-radius:8px;background:#e9eef8"></video>
+                <div class="d-grid gap-2 mt-2">
+                    <button class="btn btn-primary" onclick="captureMultiAndEnroll()">Capture & Enroll</button>
+                    <button class="btn btn-outline-secondary" onclick="stopEnrollCamera()">Stop Camera</button>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="stat-grid mt-3">
-        <div class="stat">Total Students<br><div id="totStud">0</div></div>
-        <div class="stat">Present Today<br><div id="presStud">0</div></div>
-        <div class="stat">Absent Today<br><div id="absStud">0</div></div>
-      </div>
-      <div class="mt-3 d-grid gap-2">
-        <button class="btn btn-primary" onclick="openEnroll()">Enroll Students</button>
-        <button class="btn btn-success" onclick="openAttend()">Start Attendance</button>
-        <button class="btn btn-outline-secondary" onclick="openReport()">Reports</button>
-        <button class="btn btn-outline-primary" onclick="exportClassReport()">Export Report (PDF)</button>
-        <button class="btn btn-danger" onclick="clearAllStudents()">Clear All Students</button>
-      </div>
-    </div>
 
-    <!-- ENROLL -->
-    <div id="enrollCard" class="card mt-4 hidden fade-in">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h4>Enroll Student</h4>
-        <div><button class="btn btn-outline-secondary" onclick="backToDash()">Back</button></div>
-      </div>
-      <div class="mt-2">
-        <input id="enrollRoll" class="form-control mb-2" placeholder="Roll number e.g. 1A-01">
-        <div class="muted mb-2">Position face and press Capture (3 samples).</div>
-        <video id="enrollVideo" autoplay muted playsinline style="width:100%;height:320px;object-fit:cover;border-radius:8px;background:#e9eef8"></video>
-        <div class="d-grid gap-2 mt-2">
-          <button class="btn btn-primary" onclick="captureMultiAndEnroll()">Capture & Enroll</button>
-          <button class="btn btn-outline-secondary" onclick="stopEnrollCamera()">Stop Camera</button>
+        <!-- ATTENDANCE -->
+        <div id="attendCard" class="card mt-4 hidden fade-in">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+                <h4>Live Attendance</h4>
+                <div><button class="btn btn-outline-secondary" onclick="stopAttendance()">Stop</button></div>
+            </div>
+            <div class="mt-2">
+                <video id="attendVideo" autoplay muted playsinline
+                    style="width:100%;height:360px;object-fit:cover;border-radius:8px;background:#e9eef8"></video>
+                <div class="mt-3">
+                    <h6 class="muted">Recognized</h6>
+                    <div id="recognizedWrap" style="display:flex;flex-wrap:wrap"></div>
+                </div>
+                <div class="mt-3">
+                    <h6 class="muted">Snapshot gallery</h6>
+                    <div id="snapshotGallery" style="display:flex;gap:8px;overflow:auto;padding-top:8px"></div>
+                </div>
+            </div>
         </div>
-      </div>
+
+        <!-- REPORT -->
+        <div id="reportCard" class="card mt-4 hidden fade-in">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+                <h4>Class Report</h4>
+                <div><button class="btn btn-outline-secondary" onclick="backToDash()">Back</button></div>
+            </div>
+            <div style="margin-top:10px"><canvas id="classChart" style="max-width:420px"></canvas></div>
+            <div style="margin-top:10px"><canvas id="timelineChart" style="max-width:700px"></canvas></div>
+            <div class="mt-3">
+                <h6 class="muted">Students</h6>
+                <div id="studentList"></div>
+            </div>
+        </div>
+
+        <!-- STUDENT REPORT -->
+        <div id="studentReportCard" class="card mt-4 hidden fade-in">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+                <h4>Student Analytics — <span id="srRoll"></span></h4>
+                <div><button class="btn btn-outline-secondary" onclick="backToDash()">Back</button></div>
+            </div>
+            <div style="margin-top:10px"><canvas id="studentChart" style="max-width:320px"></canvas></div>
+            <div class="mt-3">
+                <h6 class="muted">Attendance history</h6>
+                <ul id="srHistory" class="list-group mt-2" style="max-height:240px;overflow:auto"></ul>
+                <button class="btn btn-outline-primary mt-2" onclick="exportStudentReport()">Export My Report</button>
+            </div>
+        </div>
     </div>
 
-    <!-- ATTENDANCE -->
-    <div id="attendCard" class="card mt-4 hidden fade-in">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h4>Live Attendance</h4>
-        <div><button class="btn btn-outline-secondary" onclick="stopAttendance()">Stop</button></div>
-      </div>
-      <div class="mt-2">
-        <video id="attendVideo" autoplay muted playsinline style="width:100%;height:360px;object-fit:cover;border-radius:8px;background:#e9eef8"></video>
-        <div class="mt-3"><h6 class="muted">Recognized</h6><div id="recognizedWrap" style="display:flex;flex-wrap:wrap"></div></div>
-        <div class="mt-3"><h6 class="muted">Snapshot gallery</h6><div id="snapshotGallery" style="display:flex;gap:8px;overflow:auto;padding-top:8px"></div></div>
-      </div>
+    <!-- HELP MODAL -->
+    <div id="helpModal">
+        <div id="helpBox">
+            <h5>How to Use attenD</h5>
+            <ul>
+                <li>Enroll students by capturing faces.</li>
+                <li>Start attendance — auto mark present.</li>
+                <li>View Reports and export PDFs.</li>
+            </ul>
+            <div class="text-end"><button class="btn btn-primary btn-sm" onclick="closeHelp()">Close</button></div>
+        </div>
     </div>
 
-    <!-- REPORT -->
-    <div id="reportCard" class="card mt-4 hidden fade-in">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h4>Class Report</h4>
-        <div><button class="btn btn-outline-secondary" onclick="backToDash()">Back</button></div>
-      </div>
-      <div style="margin-top:10px"><canvas id="classChart" style="max-width:420px"></canvas></div>
-      <div style="margin-top:10px"><canvas id="timelineChart" style="max-width:700px"></canvas></div>
-      <div class="mt-3"><h6 class="muted">Students</h6><div id="studentList"></div></div>
+    <!-- FORGOT PASSWORD MODAL -->
+    <div id="forgotModal">
+        <div id="forgotBox">
+            <h5>Reset Teacher Password</h5>
+            <input id="fpUser" class="form-control mb-2" placeholder="teacher username (teacher1)" />
+            <input id="fpPass" type="password" class="form-control mb-2" placeholder="new password" />
+            <input id="fpPass2" type="password" class="form-control mb-2" placeholder="confirm password" />
+            <div class="text-end">
+                <button class="btn btn-secondary btn-sm" onclick="closeForgot()">Cancel</button>
+                <button class="btn btn-primary btn-sm" onclick="doResetPassword()">Reset</button>
+            </div>
+        </div>
     </div>
 
-    <!-- STUDENT REPORT -->
-    <div id="studentReportCard" class="card mt-4 hidden fade-in">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h4>Student Analytics — <span id="srRoll"></span></h4>
-        <div><button class="btn btn-outline-secondary" onclick="backToDash()">Back</button></div>
-      </div>
-      <div style="margin-top:10px"><canvas id="studentChart" style="max-width:320px"></canvas></div>
-      <div class="mt-3">
-        <h6 class="muted">Attendance history</h6>
-        <ul id="srHistory" class="list-group mt-2" style="max-height:240px;overflow:auto"></ul>
-        <button class="btn btn-outline-primary mt-2" onclick="exportStudentReport()">Export My Report</button>
-      </div>
-    </div>
-  </div>
+    <!-- FOOTER -->
+    <footer>© 2025 attenD — Contact: <a href="mailto:swapnilpawarworks@gmail.com">swapnilpawarworks@gmail.com</a>
+    </footer>
 
-  <!-- HELP MODAL -->
-  <div id="helpModal"><div id="helpBox">
-    <h5>How to Use attenD</h5>
-    <ul><li>Enroll students by capturing faces.</li><li>Start attendance — auto mark present.</li><li>View Reports and export PDFs.</li></ul>
-    <div class="text-end"><button class="btn btn-primary btn-sm" onclick="closeHelp()">Close</button></div>
-  </div></div>
 
-  <!-- FORGOT PASSWORD MODAL -->
-  <div id="forgotModal"><div id="forgotBox">
-    <h5>Reset Teacher Password</h5>
-    <input id="fpUser" class="form-control mb-2" placeholder="teacher username (teacher1)"/>
-    <input id="fpPass" type="password" class="form-control mb-2" placeholder="new password"/>
-    <input id="fpPass2" type="password" class="form-control mb-2" placeholder="confirm password"/>
-    <div class="text-end">
-      <button class="btn btn-secondary btn-sm" onclick="closeForgot()">Cancel</button>
-      <button class="btn btn-primary btn-sm" onclick="doResetPassword()">Reset</button>
-    </div>
-  </div></div>
-
-  <!-- FOOTER -->
-  <footer>© 2025 attenD — Contact: <a href="mailto:swapnilpawarworks@gmail.com">swapnilpawarworks@gmail.com</a></footer>
-
-<script>
-const STORAGE_KEY='attenD_frontend_db_v1';
-let DB={students:[],attendance:{}};
-let modelsLoaded=false,enrollStream=null,attendStream=null,recognizeInterval=null,faceMatcher=null;
-let classChart=null,timelineChart=null,studentChart=null;
-function loadDB(){try{const raw=localStorage.getItem(STORAGE_KEY);if(raw)DB=JSON.parse(raw);}catch(e){DB={students:[],attendance:{}}}}
-function saveDB(){localStorage.setItem(STORAGE_KEY,JSON.stringify(DB));}
-function getTeacherPass(){return localStorage.getItem('attenD_teacher_pass')||'pass123';}
-function setTeacherPass(p){localStorage.setItem('attenD_teacher_pass',p);}
-function hideAllCards(){['loginCard','dashCard','enrollCard','attendCard','reportCard','studentReportCard'].forEach(id=>{document.getElementById(id).classList.add('hidden');});}
-function backToDash(){stopEnrollCamera();stopAttendance();renderStats();hideAllCards();document.getElementById('dashCard').classList.remove('hidden');}
-const MODEL_URL_CDN='https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights';
-async function loadModels(){try{await faceapi.nets.ssdMobilenetv1.loadFromUri('/models').catch(()=>faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL_CDN));await faceapi.nets.faceLandmark68Net.loadFromUri('/models').catch(()=>faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL_CDN));await faceapi.nets.faceRecognitionNet.loadFromUri('/models').catch(()=>faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL_CDN));modelsLoaded=true;}catch(err){alert('Model load error');}document.getElementById('splash').style.display='none';}
-window.addEventListener('load',async()=>{loadDB();await loadModels();renderStats();});
-function showTeacherLogin(){document.getElementById('teacherBox').classList.remove('hidden');document.getElementById('studentBox').classList.add('hidden');}
-function showStudentLogin(){document.getElementById('studentBox').classList.remove('hidden');document.getElementById('teacherBox').classList.add('hidden');}
-function togglePassword(){const i=document.getElementById('tpass');i.type=i.type==='password'?'text':'password';}
-function doTeacherLogin(){const u=document.getElementById('tuser').value.trim();const p=document.getElementById('tpass').value.trim();if(u!=='teacher1'||p!==getTeacherPass()){alert('Invalid login');return;}hideAllCards();renderStats();document.getElementById('dashCard').classList.remove('hidden');}
-function doStudentLogin(){const r=document.getElementById('sroll').value.trim();const stu=DB.students.find(s=>s.roll===r);if(!stu){alert('No such student');return;}hideAllCards();renderStudentReport(r);document.getElementById('studentReportCard').classList.remove('hidden');}
-function logout(){stopEnrollCamera();stopAttendance();hideAllCards();document.getElementById('loginCard').classList.remove('hidden');}
-function openForgot(){document.getElementById('forgotModal').style.display='flex';}
-function closeForgot(){document.getElementById('forgotModal').style.display='none';}
-function doResetPassword(){const u=document.getElementById('fpUser').value.trim();const p=document.getElementById('fpPass').value.trim();const p2=document.getElementById('fpPass2').value.trim();if(u!=='teacher1'||p!==p2||p.length<4){alert('Invalid');return;}setTeacherPass(p);alert('Updated');closeForgot();}
-function renderStats(){const today=new Date().toISOString().slice(0,10);const att=DB.attendance[today]||{};const tot=DB.students.length;const pres=Object.keys(att).length;document.getElementById('totStud').innerText=tot;document.getElementById('presStud').innerText=pres;document.getElementById('absStud').innerText=tot-pres;}
-async function openEnroll(){hideAllCards();document.getElementById('enrollCard').classList.remove('hidden');try{enrollStream=await navigator.mediaDevices.getUserMedia({video:true});document.getElementById('enrollVideo').srcObject=enrollStream;}catch(e){alert('Camera error');}}
-async function captureMultiAndEnroll(){const roll=document.getElementById('enrollRoll').value.trim();if(!roll||DB.students.find(s=>s.roll===roll)){alert('Invalid');return;}const video=document.getElementById('enrollVideo');let descs=[];for(let i=0;i<3;i++){const det=await faceapi.detectSingleFace(video).withFaceLandmarks().withFaceDescriptor();if(!det){alert('No face');return;}descs.push(det.descriptor);await new Promise(r=>setTimeout(r,500));}DB.students.push({roll,descriptors:descs.map(d=>Array.from(d))});saveDB();alert('Enrolled '+roll);renderStats();}
-function stopEnrollCamera(){if(enrollStream){enrollStream.getTracks().forEach(t=>t.stop());enrollStream=null;}}
-async function openAttend(){hideAllCards();document.getElementById('attendCard').classList.remove('hidden');
-  try {
-    attendStream = await navigator.mediaDevices.getUserMedia({ video: true });
-    document.getElementById('attendVideo').srcObject = attendStream;
-  } catch (e) {
-    alert('Camera access failed');
-    return;
-  }
-
-  // Build labeled descriptors for recognition
-  const labeled = DB.students.map(s => new faceapi.LabeledFaceDescriptors(
-    s.roll,
-    s.descriptors.map(d => new Float32Array(d))
-  ));
-  faceMatcher = new faceapi.FaceMatcher(labeled, 0.6);
-
-  // Start recognition loop
-  recognizeInterval = setInterval(async () => {
-    const video = document.getElementById('attendVideo');
-    if (video.readyState < 2) return;
-    const detections = await faceapi.detectAllFaces(video).withFaceLandmarks().withFaceDescriptors();
-    const wrap = document.getElementById('recognizedWrap');
-    wrap.innerHTML = '';
-    detections.forEach(det => {
-      const best = faceMatcher.findBestMatch(det.descriptor);
-      const tag = document.createElement('div');
-      tag.className = 'face-tag';
-      tag.textContent = best.toString();
-      wrap.appendChild(tag);
-
-      if (best.label !== 'unknown') markPresent(best.label, video);
-    });
-  }, 1500);
-}
-
-function markPresent(roll, video) {
-  const today = new Date().toISOString().slice(0, 10);
-  if (!DB.attendance[today]) DB.attendance[today] = {};
-  if (!DB.attendance[today][roll]) {
-    DB.attendance[today][roll] = new Date().toLocaleTimeString();
-    saveDB();
-    renderStats();
-
-    // Snapshot
-    const canvas = document.createElement('canvas');
-    canvas.width = 120; canvas.height = 90;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, 120, 90);
-    const img = document.createElement('img');
-    img.src = canvas.toDataURL('image/jpeg', 0.7);
-    img.className = 'small-thumb';
-    document.getElementById('snapshotGallery').appendChild(img);
-  }
-}
-
-function stopAttendance() {
-  if (attendStream) {
-    attendStream.getTracks().forEach(t => t.stop());
-    attendStream = null;
-  }
-  clearInterval(recognizeInterval);
-  recognizeInterval = null;
-  faceMatcher = null;
-  hideAllCards();
-  document.getElementById('dashCard').classList.remove('hidden');
-}
-
-function openReport() {
-  hideAllCards();
-  document.getElementById('reportCard').classList.remove('hidden');
-  renderReports();
-}
-
-function renderReports() {
-  const today = new Date().toISOString().slice(0, 10);
-  const att = DB.attendance[today] || {};
-  const total = DB.students.length;
-  const present = Object.keys(att).length;
-  const absent = total - present;
-
-  if (classChart) classChart.destroy();
-  classChart = new Chart(document.getElementById('classChart'), {
-    type: 'pie',
-    data: {
-      labels: ['Present', 'Absent'],
-      datasets: [{ data: [present, absent] }]
-    }
-  });
-
-  const days = Object.keys(DB.attendance).sort();
-  const vals = days.map(d => Object.keys(DB.attendance[d]).length);
-  if (timelineChart) timelineChart.destroy();
-  timelineChart = new Chart(document.getElementById('timelineChart'), {
-    type: 'line',
-    data: { labels: days, datasets: [{ label: 'Daily Attendance', data: vals }] }
-  });
-
-  const list = document.getElementById('studentList');
-  list.innerHTML = '';
-  DB.students.forEach(s => {
-    const div = document.createElement('div');
-    div.className = 'd-flex align-items-center justify-content-between border-bottom py-1';
-    div.innerHTML = `<span>${s.roll}</span><span>${att[s.roll] ? '✅' : '❌'}</span>`;
-    list.appendChild(div);
-  });
-}
-
-function renderStudentReport(roll) {
-  document.getElementById('srRoll').textContent = roll;
-  const hist = [];
-  let pres = 0, abs = 0;
-  Object.entries(DB.attendance).forEach(([d, rec]) => {
-    if (rec[roll]) { hist.push({ d, status: 'Present', time: rec[roll] }); pres++; }
-    else { hist.push({ d, status: 'Absent', time: '-' }); abs++; }
-  });
-
-  if (studentChart) studentChart.destroy();
-  studentChart = new Chart(document.getElementById('studentChart'), {
-    type: 'doughnut',
-    data: { labels: ['Present', 'Absent'], datasets: [{ data: [pres, abs] }] }
-  });
-
-  const ul = document.getElementById('srHistory');
-  ul.innerHTML = '';
-  hist.sort((a, b) => a.d.localeCompare(b.d)).forEach(r => {
-    const li = document.createElement('li');
-    li.className = 'list-group-item';
-    li.textContent = `${r.d}: ${r.status} ${r.time}`;
-    ul.appendChild(li);
-  });
-}
-
-function exportClassReport() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  doc.setFontSize(16);
-  doc.text('Class Attendance Report', 10, 15);
-  let y = 30;
-  Object.entries(DB.attendance).forEach(([d, rec]) => {
-    doc.setFontSize(12);
-    doc.text(`${d} - ${Object.keys(rec).length} present`, 10, y);
-    y += 7;
-  });
-  doc.save('class_report.pdf');
-}
-
-function exportStudentReport() {
-  const roll = document.getElementById('srRoll').textContent;
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  doc.setFontSize(16);
-  doc.text(`Attendance Report - ${roll}`, 10, 15);
-  let y = 30;
-  Object.entries(DB.attendance).forEach(([d, rec]) => {
-    doc.setFontSize(12);
-    doc.text(`${d}: ${rec[roll] ? 'Present' : 'Absent'}`, 10, y);
-    y += 7;
-  });
-  doc.save(`report_${roll}.pdf`);
-}
-
-function openHelp() { document.getElementById('helpModal').style.display = 'flex'; }
-function closeHelp() { document.getElementById('helpModal').style.display = 'none'; }
-
-function clearAllStudents() {
-  if (confirm('This will delete all enrolled students and attendance records. Continue?')) {
-    DB = { students: [], attendance: {} };
-    saveDB();
-    renderStats();
-    alert('All students and attendance cleared.');
-  }
-}
-</script>
 </body>
-</html>
 
+</html>
